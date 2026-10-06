@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYNOX HUB | FF PROMAX OVERRIDE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: #030712;
+            color: #00f3ff;
+            font-family: 'Courier New', Courier, monospace;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .cyber-panel {
+            position: relative;
+            z-index: 10;
+            width: 480px;
+            background: rgba(3, 7, 18, 0.9);
+            border: 2px solid #00f3ff;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.35), inset 0 0 20px rgba(0, 243, 255, 0.15);
+            padding: 35px 30px;
+            backdrop-filter: blur(8px);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        }
+
+        .cyber-panel::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #00f3ff, transparent 40%, transparent 60%, #00f3ff);
+            z-index: -1;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #00f3ff;
+            animation: glitch 2s infinite;
+        }
+
+        .header span {
+            font-size: 11px;
+            color: #10b981;
+            letter-spacing: 1px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: rgba(0, 243, 255, 0.04);
+            border-left: 4px solid #00f3ff;
+            transition: background 0.3s;
+        }
+
+        .feature-item:hover {
+            background: rgba(0, 243, 255, 0.08);
+        }
+
+        .feature-name {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border: 1px solid #10b981;
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: .3s;
+            border: 1px solid #00f3ff;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px; width: 14px;
+            left: 3px; bottom: 3px;
+            background-color: #00f3ff;
+            transition: .3s;
+            box-shadow: 0 0 5px #00f3ff;
+        }
+
+        input:checked + .slider {
+            background-color: rgba(0, 243, 255, 0.25);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+            background-color: #fff;
+            box-shadow: 0 0 8px #fff;
+        }
+
+        .btn-activate {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            color: #00f3ff;
+            border: 2px solid #00f3ff;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-activate:hover {
+            background: rgba(0, 243, 255, 0.12);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+
+        .btn-activate.active {
+            border-color: #ff003c;
+            color: #ff003c;
+            text-shadow: 0 0 5px #ff003c;
+            box-shadow: 0 0 20px rgba(255, 0, 60, 0.4), inset 0 0 10px rgba(255, 0, 60, 0.2);
+            animation: pulseRed 1.5s infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes pulseRed {
+            0% { box-shadow: 0 0 15px rgba(255, 0, 60, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 60, 0.8); }
+            100% { box-shadow: 0 0 15px rgba(255, 0, 60, 0.4); }
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0 0 10px #00f3ff; transform: translate(0); }
+            20% { transform: translate(-2px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(2px, 1px); }
+            80% { transform: translate(1px, -1px); }
+            100% { text-shadow: 0 0 10px #00f3ff; transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrixCanvas"></canvas>
+
+    <div class="cyber-panel">
+        <div class="header">
+            <h1>NYNOX X FF PROMAX</h1>
+            <span>[ SYSTEM STATUS: SECURE ]</span>
+        </div>
+
+        <div class="feature-list">
+            <div class="feature-item">
+                <span class="feature-name">Anti-Ban Promax</span>
+                <span class="status-badge">ACTIVE</span>
+            </div>
+
+            <div class="feature-item">
+                <span class="feature-name">No Recoil (Antishake)</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="feature-item">
+                <span class="feature-name">FOV Circle (Wide 150px)</span>
+                <label class="switch">
+                    <input type="checkbox" checked id="fovToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <button class="btn-activate" id="activateBtn">Kích hoạt hệ thống Aimlock</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const hexChars = '0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ';
+        const fontSize = 14;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array.from({ length: columns }).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(3, 7, 18, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00f3ff';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = hexChars.charAt(Math.floor(Math.random() * hexChars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+
+            const fovToggle = document.getElementById('fovToggle');
+            if (fovToggle && fovToggle.checked) {
+                ctx.strokeStyle = 'rgba(0, 243, 255, 0.25)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(canvas.width / 2, canvas.height / 2, 150, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        setInterval(drawMatrix, 33);
+
+        const activateBtn = document.getElementById('activateBtn');
+        let isRunning = false;
+
+        activateBtn.addEventListener('click', () => {
+            isRunning = !isRunning;
+            
+            if (isRunning) {
+                activateBtn.classList.add('active');
+                activateBtn.innerText = '[!] AIMLOCK HOẠT ĐỘNG (BYPASS ACTIVE) [!]';
+                activateBtn.style.animation = 'pulseRed 1s infinite, glitch 0.2s 3';
+            } else {
+                activateBtn.classList.remove('active');
+                activateBtn.innerText = 'Kích hoạt hệ thống Aimlock';
+                activateBtn.style.animation = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
